@@ -63,7 +63,7 @@ class SpotifyStyleGUI:
                                         font=("Trebuchet MS", 18, "bold"), command=self.load_audio)
         self.upload_btn.grid(row=0, column=0, padx=10, pady=10)
 
-        self.analyze_btn = ctk.CTkButton(btn_frame, text="Analyze STFT", width=170, height=45,
+        self.analyze_btn = ctk.CTkButton(btn_frame, text="Analyze Audio", width=170, height=45,
                                          corner_radius=25, fg_color="#1DB954", hover_color="#909090",
                                          font=("Trebuchet MS", 18, "bold"), command=self.start_thread)
         self.analyze_btn.grid(row=0, column=1, padx=10, pady=10)
