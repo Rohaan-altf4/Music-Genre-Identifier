@@ -77,6 +77,11 @@ class SpotifyStyleGUI:
                                          font=("Trebuchet MS", 20, "bold"), text_color="#1DB954")
         self.result_label.pack(pady=6)
 
+        # Filename display label
+        self.filename_label = ctk.CTkLabel(main_frame, text="File: -",
+                                           font=("Trebuchet MS", 14), text_color="#B3B3B3")
+        self.filename_label.pack(pady=(0, 10))
+
         # Spectrogram area
         self.spectrogram_frame = ctk.CTkFrame(main_frame, fg_color="#181818", corner_radius=20)
         self.spectrogram_frame.pack(pady=15)
@@ -85,8 +90,6 @@ class SpotifyStyleGUI:
                                               font=("Trebuchet MS", 13),
                                               text_color="#B3B3B3", width=820, height=340)
         self.spectrogram_label.pack(pady=10, padx=10)
-
-
 
     # ---------- Load + Analyze ----------
     def load_audio(self):
@@ -97,6 +100,7 @@ class SpotifyStyleGUI:
             self.status_label.configure(text=f"Loaded: {fname}", text_color="#1DB954",
                                         font=("Trebuchet MS", 15, "bold"))
             self.result_label.configure(text="Predicted Genre: -", text_color="#1DB954")
+            self.filename_label.configure(text=f"File: {fname}", text_color="#B3B3B3")
             self.spectrogram_label.configure(image=None, text="Spectrogram will appear here")
 
     def start_thread(self):
@@ -110,11 +114,17 @@ class SpotifyStyleGUI:
 
     def analyze_audio(self):
         try:
+            fname = self.audio_path.split("/")[-1]
             sr, D, features = analyze_audio_file(self.audio_path)
             genre = predict_genre(features)
 
+            # Update UI after analysis
             self.root.after(0, lambda: self.result_label.configure(
                 text=f"🎧 Predicted Genre: {genre}", text_color="#1DB954"))
+            self.root.after(0, lambda: self.status_label.configure(
+                text="Status: Analysis complete.", text_color="#1DB954"))
+            self.root.after(0, lambda: self.filename_label.configure(
+                text=f"Analyzed File: {fname}", text_color="#B3B3B3"))
 
             # Generate spectrogram
             fig, ax = plt.subplots(figsize=(8, 3.5))
@@ -135,11 +145,11 @@ class SpotifyStyleGUI:
             def update_ui():
                 self.spectrogram_label.configure(image=imgtk, text="")
                 self.spectrogram_label.image = imgtk
-                self.status_label.configure(text="Status: Analysis complete.", text_color="#1DB954")
                 self.upload_btn.configure(state="normal")
                 self.analyze_btn.configure(state="normal")
 
             self.root.after(0, update_ui)
+
         except Exception as e:
             self.root.after(0, lambda: self.status_label.configure(text=f"Error: {e}", text_color="red"))
             self.root.after(0, lambda: self.upload_btn.configure(state="normal"))
